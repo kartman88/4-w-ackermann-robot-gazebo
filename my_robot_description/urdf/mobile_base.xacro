@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="base_length" value="0.8" />
+    <xacro:property name="base_width" value="0.4" />
+    <xacro:property name="base_height" value="0.2" />
+    <xacro:property name="base_mass" value="5.0" /> <!--Kg-->
+    <xacro:property name="wheel_mass" value="1.0" />
+    <xacro:property name="wheel_radius" value="0.1" />
+    <xacro:property name="wheel_length" value="0.05" />
+
+    <!--LINK-->
+    <link name="base_footprint" />
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="${base_length} ${base_width} ${base_height}" />
+            </geometry>
+            <origin xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
+            <material name="blue" />
+        </visual>
+        <xacro:box_collision l="${base_length}" w="${base_width}" h="${base_height}" xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
+        <xacro:box_inertia m="${base_mass}" l="${2*base_length}" w="${2*base_width}" h="${2*base_height}" 
+                           xyz="0 0 ${base_height / 2.0}" rpy="0 0 0"/>
+    </link>
+
+    <xacro:macro name="wheel_link" params="prefix">
+        <link name="${prefix}_wheel_link">
+            <visual>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+                </geometry>
+                <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
+                <material name="grey" />
+            </visual>
+            <xacro:cylinder_collision r="${wheel_radius}" l="${wheel_length}" xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
+            <xacro:cylinder_inertia m="${wheel_mass}" r="${2*wheel_radius}" l="${2*wheel_length}"
+                                    xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
+        </link>
+    </xacro:macro>
+
+    <xacro:wheel_link prefix="front_r" />
+    <xacro:wheel_link prefix="front_l" />
+    <xacro:wheel_link prefix="back_r" />
+    <xacro:wheel_link prefix="back_l" />
+
+    <link name="r_steer">
+        <inertial>
+          <origin rpy="0 0 0" xyz="0.003381 1.5929e-07 0.02162" />
+          <mass value="0.1" />
+          <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+      </link>
+    
+    <link name="l_steer">
+        <inertial>
+          <origin rpy="0 0 0" xyz="0.003381 1.5929e-07 0.02162" />
+          <mass value="0.1" />
+          <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+        </inertial>
+      </link>
+
+    <!--JOINT-->
+    <joint name="base_joint" type="fixed">
+        <parent link="base_footprint" />
+        <child link="base_link" />
+        <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+    </joint>
+
+    <!--ACKERMANN STEER JOINTS-->
+    <joint name="base_r_steer_joint" type="revolute">
+        <origin rpy="0 0 0" xyz="${base_length / 4.0} ${-base_width / 2.0} 0" />
+        <parent link="base_link" />
+        <child link="r_steer" />
+        <axis xyz="0.0 0.0 1.0" />
+        <dynamics damping="0.01" friction="0.01" />
+        <limit effort="1000.0" lower="-0.95" upper="0.95" velocity="100" />
+      </joint>
+    
+    <joint name="base_l_steer_joint" type="revolute">
+        <origin rpy="0 0 0" xyz="${base_length / 4.0} ${base_width / 2.0} 0" />
+        <parent link="base_link" />
+        <child link="l_steer" />
+        <axis xyz="0.0 0.0 1.0" />
+        <dynamics damping="0.01" friction="0.01" />
+        <limit effort="1000.0" lower="-0.95" upper="0.95" velocity="100" />
+      </joint>
+
+
+    <!--BACK WHEEL JOINTS-->
+    <joint name="base_back_r_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="back_r_wheel_link" />
+        <origin xyz="${-base_length / 4.0} ${-(base_width + wheel_length) / 2.0} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <joint name="base_back_l_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="back_l_wheel_link" />
+        <origin xyz="${-base_length / 4.0} ${(base_width + wheel_length) / 2.0} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <!--FRONT WHEEL JOINTS-->
+    <joint name="l_steer_front_l_wheel_joint" type="continuous">
+        <parent link="l_steer" />
+        <child link="front_l_wheel_link" />
+        <origin xyz="0 ${wheel_length / 2} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <joint name="r_steer_front_r_wheel_joint" type="continuous">
+        <parent link="r_steer" />
+        <child link="front_r_wheel_link" />
+        <origin xyz="0 ${-wheel_length / 2} 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <!--STEERING WHEEL JOINT-->
+    <link name="steering_wheel">
+        <mass value="0.1" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </link>
+
+    <joint name="steering_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="steering_wheel" />
+        <origin xyz="${base_length / 4.0} 0 0" rpy="0 0 0"/>
+        <axis xyz="0.0 0.0 1.0" />
+        <dynamics damping="0.01" friction="0.01" />
+        <limit effort="1000.0" lower="-0.95" upper="0.95" velocity="100" />
+    </joint>
+
+</robot>
