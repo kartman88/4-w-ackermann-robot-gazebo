@@ -15,47 +15,47 @@
     <xacro:wheel_gazebo prefix="front_r" />
     <xacro:wheel_gazebo prefix="back_l" />
     <xacro:wheel_gazebo prefix="back_r" />
+    <!-- <xacro:wheel_gazebo prefix="steering" />-->
 
-    <gazebo>
-        <plugin name='ackermann_drive' filename='libgazebo_ros_ackermann_drive.so'>
-            
-            <update_rate>100.0</update_rate>
-            <!-- wheels -->
-            <front_left_joint>l_steer_front_l_wheel_joint</front_left_joint>
-            <front_right_joint>r_steer_front_r_wheel_joint</front_right_joint>
-            <rear_left_joint>base_back_l_wheel_joint</rear_left_joint>
-            <rear_right_joint>base_back_r_wheel_joint</rear_right_joint>
-            <left_steering_joint>base_l_steer_joint</left_steering_joint>
-            <right_steering_joint>base_r_steer_joint</right_steering_joint>
-            <steering_wheel_joint>steering_joint</steering_wheel_joint>
+     <!-- Ackermann driver -->
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="base_back_l_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="base_back_r_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="base_l_steer_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="base_r_steer_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <!-- <joint name="l_steer_front_l_wheel_joint">
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="r_steer_front_r_wheel_joint">
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>-->
+  </ros2_control>
 
-            <!-- Max absolute steer angle for tyre in radians-->
-            <!-- Any cmd_vel angular z greater than this would be capped -->
-            <max_steer>0.6458</max_steer>
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+        <parameters>$(find my_robot_bringup)/config/ackermann_config.yaml</parameters>
+    </plugin>
+  </gazebo>
 
-            <!-- Max absolute steering angle of steering wheel -->
-            <max_steering_angle>7.85</max_steering_angle>
-
-            <!-- Max absolute linear speed in m/s -->
-            <max_speed>20</max_speed>
-
-            <!-- PID tuning -->
-            <left_steering_pid_gain>1500 0 1</left_steering_pid_gain>
-            <left_steering_i_range>0 0</left_steering_i_range>
-            <right_steering_pid_gain>1500 0 1</right_steering_pid_gain>
-            <right_steering_i_range>0 0</right_steering_i_range>
-            <linear_velocity_pid_gain>1000 0 1</linear_velocity_pid_gain>
-            <linear_velocity_i_range>0 0</linear_velocity_i_range>
-
-            <!-- output -->
-            <publish_odom>true</publish_odom>
-            <publish_odom_tf>true</publish_odom_tf>
-            <publish_wheel_tf>true</publish_wheel_tf>
-            <publish_distance>true</publish_distance>
-
-            <odometry_frame>odom</odometry_frame>
-            <robot_base_frame>base_footprint</robot_base_frame>
-
-        </plugin>
-    </gazebo>   
 </robot>
