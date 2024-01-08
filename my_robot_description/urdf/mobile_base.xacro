@@ -61,18 +61,6 @@
         </inertial>
       </link>
 
-      <!-- <link name="steering_wheel_link">
-        <visual>
-            <geometry>
-                <cylinder radius="${wheel_radius}" length="${wheel_length}" />
-            </geometry>
-            <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
-            <material name="grey" />
-        </visual>
-        <xacro:cylinder_inertia m="${wheel_mass}" r="${2*wheel_radius}" l="${2*wheel_length}"
-                                xyz="0 0 0" rpy="0 0 0" />
-    </link>-->
-
     <!--JOINT-->
     <joint name="base_joint" type="fixed">
         <parent link="base_footprint" />
@@ -129,17 +117,4 @@
         <origin xyz="0 ${-wheel_length / 2} 0" rpy="0 0 0" />
         <axis xyz="0 1 0" />
     </joint>
-
-    <!--STEERING WHEEL JOINT
-    
-
-    <joint name="steering_joint" type="revolute">
-        <parent link="base_link" />
-        <child link="steering_wheel_link" />
-        <origin xyz="${base_length / 4.0} 0 0" rpy="0 0 0"/>
-        <axis xyz="0.0 0.0 1.0" />
-        <dynamics damping="0.01" friction="0.01" />
-        <limit effort="1000.0" lower="-0.95" upper="0.95" velocity="100" />
-    </joint>-->
-
 </robot>
