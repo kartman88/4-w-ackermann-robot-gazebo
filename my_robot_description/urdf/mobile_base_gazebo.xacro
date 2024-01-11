@@ -42,14 +42,17 @@
       <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
-    <!-- <joint name="l_steer_front_l_wheel_joint">
+    <!--FRONT WHEEL-->
+    <joint name="l_steer_front_l_wheel_joint">
       <state_interface name="position"/>
       <state_interface name="velocity"/>
+      <state_interface name="effort"/>
     </joint>
     <joint name="r_steer_front_r_wheel_joint">
       <state_interface name="position"/>
       <state_interface name="velocity"/>
-    </joint>-->
+      <state_interface name="effort"/>
+    </joint>
   </ros2_control>
 
   <gazebo>
